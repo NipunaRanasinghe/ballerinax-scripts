@@ -42,10 +42,6 @@ while IFS= read -r repo; do
     fi
   fi
 
-  # Define the old and new text
-  old_text='branches-ignore:\n      - "automated/dependency_version_update"\n      - "automated/dependency_version_update_tmp"'
-  new_text="branches:\n  - $base_branch\n  - 2201.[0-9]+.x"
-
   # Use sed to replace the text in the file
   sed -i '' "s/branches-ignore/branches/g" ".github/workflows/ci.yml"
   old_text='automated/dependency_version_update'
@@ -56,7 +52,7 @@ while IFS= read -r repo; do
   sed -i '' "s/$old_text/$new_text/g" "/.github/workflows/ci.yml"
 
   # Commit the changes
-  git commit -am "Rename --native to --graalvm"
+  git commit -am "Update ci.yml file"
 
   # Push the branch
   git push origin update
@@ -71,7 +67,7 @@ while IFS= read -r repo; do
   git push origin update
 
   # Create a pull request
-  pr_url=$(gh pr create --base "$base_branch" --head update --title "Update GraalVM workflow with new command option" --body "This PR will rename the command option in the graalVM workflow from --native to --graalvm. Fixes https://github.com/ballerina-platform/ballerina-extended-library/issues/531" | grep -m1 -o 'http.*')
+  pr_url=$(gh pr create --base "$base_branch" --head update --title "Restrict CI workflow runs to specific branches" --body "This PR will restrict CI workflow runs only to main and 2201.x.x branches. Fixes https://github.com/ballerina-platform/ballerina-extended-library/issues/531" | grep -m1 -o 'http.*')
   echo "$PR_LINKS_FILE"
   echo "$pr_url" >> "$PR_LINKS_FILE"
 

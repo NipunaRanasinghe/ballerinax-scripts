@@ -31,3 +31,4 @@ https://github.com/ballerina-platform/module-ballerinax-mongodb/pull/216
 https://github.com/ballerina-platform/module-ballerinax-redis/pull/162
 https://github.com/ballerina-platform/module-ballerinax-twitter/pull/97
 https://github.com/ballerina-platform/module-ballerinax-cdata.connect/pull/15
+https://github.com/NipunaRanasinghe/ballerinax-scripts/pull/1

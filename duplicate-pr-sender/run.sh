@@ -48,10 +48,10 @@ while IFS= read -r repo; do
 
   # Use sed to replace the text in the file
   sed -i '' "s/branches-ignore/branches/g" ".github/workflows/ci.yml"
-  old_text='"automated/dependency_version_update"'
+  old_text='automated/dependency_version_update'
   new_text="$base_branch"
   sed -i '' "s/$old_text/$new_text/g" "/.github/workflows/ci.yml"
-  old_text='"automated/dependency_version_update_tmp"'
+  old_text='automated/dependency_version_update_tmp'
   new_text="2201.[0-9]+.x"
   sed -i '' "s/$old_text/$new_text/g" "/.github/workflows/ci.yml"
 

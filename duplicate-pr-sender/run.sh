@@ -13,6 +13,18 @@ PR_LINKS_FILE="pull_request_links.txt"
 while IFS= read -r repo; do
   echo "Processing repository: $repo"
 
+  # Clone the repository
+  git clone "https://github.com/ballerina-platform/${repo}.git"
+
+  # Enter the repository directory
+  cd "$repo" || exit 1
+
+  # Create a new branch
+  git checkout -b update
+
+  # checkout the file
+  git checkout ".github/workflows/ci.yml"
+
   # Check if 'main' branch exists
   main_branch_exists=$(git ls-remote --exit-code --heads origin main >/dev/null 2>&1; echo $?)
   if [[ $main_branch_exists -eq 0 ]]; then
@@ -29,18 +41,6 @@ while IFS= read -r repo; do
       continue
     fi
   fi
-
-  # Clone the repository
-  git clone "https://github.com/ballerina-platform/${repo}.git"
-
-  # Enter the repository directory
-  cd "$repo" || exit 1
-
-  # Create a new branch
-  git checkout -b update
-
-  # checkout the file
-  git checkout ".github/workflows/ci.yml"
 
   # Define the old and new text
   old_text='branches-ignore:\n      - "automated/dependency_version_update"\n      - "automated/dependency_version_update_tmp"'

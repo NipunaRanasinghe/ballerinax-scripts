@@ -13,6 +13,23 @@ PR_LINKS_FILE="pull_request_links.txt"
 while IFS= read -r repo; do
   echo "Processing repository: $repo"
 
+  # Check if 'main' branch exists
+  main_branch_exists=$(git ls-remote --exit-code --heads origin main >/dev/null 2>&1; echo $?)
+  if [[ $main_branch_exists -eq 0 ]]; then
+    base_branch="main"
+  else
+    # Check if 'master' branch exists
+    master_branch_exists=$(git ls-remote --exit-code --heads origin master >/dev/null 2>&1; echo $?)
+    if [[ $master_branch_exists -eq 0 ]]; then
+      base_branch="master"
+    else
+      echo "Neither 'main' nor 'master' branch found in the repository. Skipping pull request creation."
+      cd ..
+      rm -rf "$repo"
+      continue
+    fi
+  fi
+
   # Clone the repository
   git clone "https://github.com/ballerina-platform/${repo}.git"
 
@@ -23,33 +40,26 @@ while IFS= read -r repo; do
   git checkout -b update
 
   # checkout the file
-  git checkout ".github/workflows/build-with-bal-test-native.yml"
+  git checkout ".github/workflows/ci.yml"
 
-  # Replace "test --native" with "test --graalvm"
-  gsed -i 's/--native/--graalvm/g' ".github/workflows/build-with-bal-test-native.yml"
+  # Define the old and new text
+  old_text='branches-ignore:\n      - "automated/dependency_version_update"\n      - "automated/dependency_version_update_tmp"'
+  new_text="branches:\n  - $base_branch\n  - 2201.[0-9]+.x"
+
+  # Use sed to replace the text in the file
+  sed -i '' "s/branches-ignore/branches/g" ".github/workflows/ci.yml"
+  old_text='"automated/dependency_version_update"'
+  new_text="$base_branch"
+  sed -i '' "s/$old_text/$new_text/g" "/.github/workflows/ci.yml"
+  old_text='"automated/dependency_version_update_tmp"'
+  new_text="2201.[0-9]+.x"
+  sed -i '' "s/$old_text/$new_text/g" "/.github/workflows/ci.yml"
 
   # Commit the changes
   git commit -am "Rename --native to --graalvm"
 
   # Push the branch
   git push origin update
-
-   # Check if 'main' branch exists
-    main_branch_exists=$(git ls-remote --exit-code --heads origin main >/dev/null 2>&1; echo $?)
-    if [[ $main_branch_exists -eq 0 ]]; then
-      base_branch="main"
-    else
-      # Check if 'master' branch exists
-      master_branch_exists=$(git ls-remote --exit-code --heads origin master >/dev/null 2>&1; echo $?)
-      if [[ $master_branch_exists -eq 0 ]]; then
-        base_branch="master"
-      else
-        echo "Neither 'main' nor 'master' branch found in the repository. Skipping pull request creation."
-        cd ..
-        rm -rf "$repo"
-        continue
-      fi
-    fi
 
   # Fetch the latest changes from the base branch
   git fetch origin "$base_branch"

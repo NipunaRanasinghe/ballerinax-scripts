@@ -3,9 +3,6 @@
 # Define the path to the JSON file containing the list of repositories
 REPO_FILE="repos.json"
 
-# Replace with the actual script you want to execute in each repository
-CHANGE_SCRIPT="changes.sh"
-
 # Output file for pull request links
 PR_LINKS_FILE="pull_request_links.txt"
 
@@ -44,12 +41,12 @@ while IFS= read -r repo; do
 
   # Use sed to replace the text in the file
   sed -i '' "s/branches-ignore/branches/g" ".github/workflows/ci.yml"
-  old_text='automated/dependency_version_update'
+  old_text2='"automated/dependency_version_update_tmp"'
+  new_text2="2201.[0-9]+.x"
+  sed -i '' "s#$old_text2#$new_text2#g" ".github/workflows/ci.yml"
+  old_text='"automated/dependency_version_update"'
   new_text="$base_branch"
-  sed -i '' "s/$old_text/$new_text/g" "/.github/workflows/ci.yml"
-  old_text='automated/dependency_version_update_tmp'
-  new_text="2201.[0-9]+.x"
-  sed -i '' "s/$old_text/$new_text/g" "/.github/workflows/ci.yml"
+  sed -i '' "s#$old_text#$new_text#g" ".github/workflows/ci.yml"
 
   # Commit the changes
   git commit -am "Update ci.yml file"
@@ -67,7 +64,7 @@ while IFS= read -r repo; do
   git push origin update
 
   # Create a pull request
-  pr_url=$(gh pr create --base "$base_branch" --head update --title "Restrict CI workflow runs to specific branches" --body "This PR will restrict CI workflow runs only to main and 2201.x.x branches. Fixes https://github.com/ballerina-platform/ballerina-extended-library/issues/531" | grep -m1 -o 'http.*')
+  pr_url=$(gh pr create --base "$base_branch" --head update --title "Restrict CI workflow runs to specific branches" --body "This PR will restrict CI workflow runs only to main and 2201.x.x branches. Fixes https://github.com/ballerina-platform/ballerina-extended-library/issues/586" | grep -m1 -o 'http.*')
   echo "$PR_LINKS_FILE"
   echo "$pr_url" >> "$PR_LINKS_FILE"
 

@@ -33,3 +33,8 @@ https://github.com/ballerina-platform/module-ballerinax-cdata.connect/pull/22
 https://github.com/ballerina-platform/module-ballerinax-snowflake/pull/30
 
 https://github.com/ballerina-platform/module-ballerinax-cdata.connect.driver/pull/13
+
+// these are missing
+module-ballerinax-googleapis.calendar
+module-ballerinax-azure-cosmosdb
+module-ballerinax-snowflake.driver
